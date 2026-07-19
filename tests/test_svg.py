@@ -65,6 +65,8 @@ def compiled_project(tmp_path: Path) -> Path:
         "stroke": "#7b3fa0",
         "stroke_width": 2,
         "dash": None,
+        "arrow_start": True,
+        "arrow_end": True,
     }]
     save_manifest(project / "project.yaml", data)
     approve_review(project)
@@ -96,6 +98,8 @@ def test_compiler_embeds_exact_and_clean_images_with_stable_ids(tmp_path: Path) 
     assert "data:image/png;base64," in source
     assert "细胞 Cell" in source
     assert "M 28 20 C 38 10 48 30 58 20" in source
+    assert 'marker-start="url(#bio-arrow)"' in source
+    assert 'marker-end="url(#bio-arrow)"' in source
 
 
 def test_compiler_refuses_stale_approval(tmp_path: Path) -> None:

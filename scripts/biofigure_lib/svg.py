@@ -137,11 +137,12 @@ def _live_text_markup(item: dict[str, Any]) -> str:
 def _connector_markup(item: dict[str, Any]) -> str:
     dash = item.get("dash")
     dash_attribute = f' stroke-dasharray="{_esc(dash)}"' if dash else ""
-    marker = ' marker-end="url(#bio-arrow)"' if item.get("arrow_end", True) else ""
+    marker_start = ' marker-start="url(#bio-arrow)"' if item.get("arrow_start", False) else ""
+    marker_end = ' marker-end="url(#bio-arrow)"' if item.get("arrow_end", True) else ""
     return (
         f'<path id="{_esc(item["id"])}" d="{_esc(item["path"])}" fill="none" '
         f'stroke="{_esc(item.get("stroke", "#333333"))}" stroke-width="{_esc(item.get("stroke_width", 2))}"'
-        f'{dash_attribute}{marker} data-group="{_esc(item.get("group", ""))}"/>'
+        f'{dash_attribute}{marker_start}{marker_end} data-group="{_esc(item.get("group", ""))}"/>'
     )
 
 

@@ -64,7 +64,7 @@ def test_cli_suggest_approve_extract_and_compile(tmp_path: Path) -> None:
     project = tmp_path / "project"
     assert run_cli("init", str(project), "--name", "flow", "--source", str(source)).returncode == 0
     candidates = tmp_path / "candidates.json"
-    candidates.write_text(json.dumps([{
+    candidate_payload = json.dumps([{
         "id": "panel-a.cell",
         "kind": "biological-asset",
         "label": "cell",
@@ -73,7 +73,8 @@ def test_cli_suggest_approve_extract_and_compile(tmp_path: Path) -> None:
         "z_index": 10,
         "background": "#ffffff",
         "tolerance": 8,
-    }]), encoding="utf-8")
+    }], ensure_ascii=False)
+    candidates.write_bytes(b"\xef\xbb\xbf" + candidate_payload.replace("\n", "\r\n").encode("utf-8"))
     assert run_cli("suggest", str(project), "--candidates", str(candidates)).returncode == 0
     assert run_cli("approve", str(project)).returncode == 0
     assert run_cli("extract", str(project)).returncode == 0
