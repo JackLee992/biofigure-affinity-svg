@@ -58,6 +58,21 @@ def test_cli_init_and_inspect_json(tmp_path: Path) -> None:
     assert json.loads(inspected.stdout)["project"] == "cli"
 
 
+def test_cli_handles_unicode_and_space_paths(tmp_path: Path) -> None:
+    source = tmp_path / "原始 图片.png"
+    Image.new("RGB", (40, 30), "white").save(source)
+    project = tmp_path / "项目 with spaces"
+    initialized = run_cli(
+        "--json", "init", str(project), "--name", "跨平台项目", "--source", str(source),
+    )
+    assert initialized.returncode == 0, initialized.stderr
+    inspected = run_cli("--json", "inspect", str(project))
+    assert inspected.returncode == 0, inspected.stderr
+    report = json.loads(inspected.stdout)
+    assert report["project"] == "跨平台项目"
+    assert (project / "source/original.png").is_file()
+
+
 def test_cli_suggest_approve_extract_and_compile(tmp_path: Path) -> None:
     source = tmp_path / "source.png"
     Image.new("RGB", (40, 30), "white").save(source)
