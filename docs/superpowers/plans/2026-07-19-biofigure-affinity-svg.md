@@ -18,6 +18,8 @@
 - Keep exact layers visible and live-text, vector-connector, clean-asset, and reference layers hidden by default.
 - Never overwrite user-provided source or group assets.
 - Do not write native `.afdesign` files or bundle a segmentation/image-generation provider.
+- Keep manifests, generated SVG, and CLI behavior portable across macOS and Windows; never persist machine-specific absolute paths.
+- Run the automated suite on macOS, Windows, and Linux; perform Affinity desktop validation on macOS now and preserve the same checklist for Windows.
 
 ---
 
@@ -243,7 +245,7 @@ Expected: import failure for `biofigure_lib.qa`.
 
 - [ ] **Step 3: Implement browser rendering and fidelity metrics**
 
-Detect Chrome, Chromium, or Edge. Render with device scale factor 1 and the exact canvas dimensions. Terminate the browser after the screenshot exists. Compute absolute and normalized RMSE with Pillow and reject dimension mismatches.
+Detect Chrome, Chromium, or Edge through platform-specific candidate paths and `PATH`. Render with device scale factor 1 and the exact canvas dimensions using `shell=False`. Terminate the browser after the screenshot exists. Compute absolute and normalized RMSE with Pillow and reject dimension mismatches.
 
 - [ ] **Step 4: Implement structural and Affinity report validation**
 
@@ -364,7 +366,7 @@ Commit: `git commit -m 'test: add biofigure end-to-end regression'`
 
 - [ ] **Step 1: Add CI and ignore generated projects**
 
-CI installs `requirements.txt`, runs `quick_validate.py`, compiles Python files, runs all unit tests, and executes the synthetic end-to-end workflow. Ignore caches, virtual environments, generated projects, and local regression output.
+CI uses a `macos-latest`, `windows-latest`, and `ubuntu-latest` matrix. Each runner installs `requirements.txt`, runs `quick_validate.py`, compiles Python files, runs all unit tests, and executes the synthetic end-to-end workflow. Ignore caches, virtual environments, generated projects, and local regression output.
 
 - [ ] **Step 2: Run the full local verification**
 
@@ -382,6 +384,8 @@ Expected: all commands return zero and validator prints `Skill is valid!`.
 - [ ] **Step 3: Install as the single source of truth**
 
 Create `/Users/jacklee/.codex/skills/biofigure-affinity-svg` as a symlink to `/Users/jacklee/develop/daillyTasks/biofigure-affinity-svg`. Verify with `test -L` and `readlink`.
+
+Document Windows installation at `%USERPROFILE%\.codex\skills\biofigure-affinity-svg`, preferring a directory junction or symlink and falling back to a synchronized copy when developer mode is unavailable.
 
 - [ ] **Step 4: Publish the standalone GitHub repository**
 

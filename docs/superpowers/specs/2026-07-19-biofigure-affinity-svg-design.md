@@ -6,6 +6,8 @@ Build a reusable Codex skill that can reconstruct an existing biomedical figure 
 
 Affinity import is a release gate, not a best-effort compatibility target.
 
+The generated projects and CLI must run on macOS and Windows. Linux remains supported for headless compilation and structural CI, but Affinity desktop validation targets macOS and Windows.
+
 ## Supported workflows
 
 ### Existing figure to editable SVG
@@ -59,6 +61,8 @@ biofigure-project/
 ```
 
 The skill repository is separate from generated projects. The CLI accepts an explicit project directory and never relies on the skill checkout as a working directory.
+
+Manifest paths use forward-slash relative paths. The CLI resolves them with `pathlib` and never stores an absolute macOS or Windows path inside a portable project.
 
 ## Manifest contract
 
@@ -134,6 +138,8 @@ Arial,'Microsoft YaHei','PingFang SC','Hiragino Sans GB',sans-serif
 
 Exact text crops preserve the default appearance. Live text is the editable alternative and may render with small platform-dependent width or antialiasing differences.
 
+Windows uses Arial and Microsoft YaHei from the fallback chain; macOS uses Arial, PingFang SC, or Hiragino Sans GB. The compiler writes the full chain rather than resolving it on the build machine.
+
 ## CLI contract
 
 The skill exposes one Python entry point:
@@ -160,6 +166,8 @@ Commands:
 - `inspect`: report group metadata and dependent objects.
 
 Image generation is orchestrated by Codex through the available image generation tool. The CLI records prompts and files but does not hard-code a remote image provider.
+
+All subprocess calls use argument arrays with `shell=False`. Browser detection covers Chrome, Chromium, and Edge installation paths on macOS and Windows. ImageMagick is invoked through the cross-platform `magick` executable when diagnostics need it.
 
 ## Incremental rebuild rules
 
@@ -216,6 +224,8 @@ For release validation on a machine with Affinity installed:
 
 Automated structural checks do not replace this real import gate.
 
+The same checklist applies to Affinity on macOS and Windows. A report records `platform`, Affinity version, and each checklist result so a project can retain evidence from both platforms when required.
+
 ## Skill packaging
 
 - Repository root is the skill root.
@@ -225,7 +235,9 @@ Automated structural checks do not replace this real import gate.
 - `agents/openai.yaml` supplies UI metadata.
 - The development repository is the source of truth.
 - `/Users/jacklee/.codex/skills/biofigure-affinity-svg` is a symlink to the repository.
+- On Windows, install under `%USERPROFILE%\.codex\skills\biofigure-affinity-svg` using a directory junction/symlink when available or an explicit synchronized copy when developer mode is unavailable.
 - GitHub Actions runs the skill validator, unit tests, and a synthetic project smoke test.
+- GitHub Actions runs the Python and synthetic-project suite on `macos-latest`, `windows-latest`, and `ubuntu-latest`.
 
 ## Out of scope for version 1
 
