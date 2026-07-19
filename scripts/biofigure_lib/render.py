@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Mapping, Optional
 
 from .errors import DependencyError, QAError
-from .manifest import load_manifest
 
 
 def browser_candidates(
@@ -57,6 +56,8 @@ def detect_browser(explicit: Optional[Path] = None) -> Path:
 
 
 def render_svg(project_dir: Path, browser: Optional[Path] = None, timeout_seconds: int = 20) -> Path:
+    from .manifest import load_manifest
+
     project_dir = Path(project_dir)
     data = load_manifest(project_dir / "project.yaml")
     svg = project_dir / "exports/affinity.svg"

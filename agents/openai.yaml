@@ -1,0 +1,4 @@
+interface:
+  display_name: "Biofigure Affinity SVG"
+  short_description: "生成、拆分并编辑 Affinity 生物医学 SVG"
+  default_prompt: "Use $biofigure-affinity-svg to turn this biomedical figure into a grouped, editable Affinity SVG."
